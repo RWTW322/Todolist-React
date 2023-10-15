@@ -1,9 +1,12 @@
 "use client"
 
-import React from "react";
+import React, { useCallback } from "react";
 import { Todo } from "./Todo";
 import { TodoForm } from "./TodoForm";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { TodoProps } from "../types";
+import { getTodoItems, setTodoItem } from "../utils/localStorage";
 
 
 const LS_KEY: string = "TODOLIST";
@@ -16,38 +19,33 @@ export const createUniqueId = (lastId = 0) => {
     }
 }
 
-export const getTodoList = () => {
-
+export const getTodoList = (): TodoProps[] => {
     if (typeof window !== "undefined") {
-        const storedTodos = localStorage.getItem(LS_KEY);
-        if (!storedTodos) {
-            localStorage.setItem(LS_KEY, "[]");
-            return [];
-        }
-        return JSON.parse(storedTodos);
+        const todos = getTodoItems(LS_KEY)
+        return todos;
     } else {
         return [];
     }
 }
 
-export const addTodo = (newTodo: object) => {
-
-    const list = getTodoList();
-    localStorage.setItem(LS_KEY, JSON.stringify([...list, newTodo]));
-}
-
-interface TodoProps {
-    description: string;
-    title: string;
-    isDone: boolean;
-    id: number;
-}
+export const addTodo = (newTodo: TodoProps) => new Promise<TodoProps>((res) => {
+    setTodoItem(LS_KEY, newTodo)
+    res(newTodo)
+})
 
 export let storedTodos: TodoProps[] = getTodoList();
 
 export function TodoList() {
+    const [showModal, setShowModal] = useState(false);
 
-    const [todos, setTodos] = useState([]);
+    const [todos, setTodos] = useState<TodoProps[]>([]);
+
+    const createTodo = useCallback((newTodo: TodoProps) => {
+        addTodo(newTodo).then(todo=>{
+            setTodos(rest=>([...rest, todo]))
+            setShowModal(false)
+        })
+    }, [])
 
     useEffect(() => {
         const storedData = localStorage.getItem(LS_KEY);
@@ -58,12 +56,22 @@ export function TodoList() {
     }, []);
 
     return (
-        <div>
-            <ul className="todo-list">
-                {storedTodos.map((todo) => (
-                    <Todo key={todo.id} title={todo.title} description={todo.description} isDone={todo.isDone} id={todo.id} />
-                ))}
-            </ul>
-        </div>
+        <>
+            <button className="button button-add-todo" onClick={() => setShowModal(true)}>
+                ADD TODO
+            </button>
+            {showModal && createPortal(
+                <TodoForm addTodo={createTodo} todoList={todos}/>,
+                document.body
+            )}
+            <div>
+                <ul className="todo-list">
+                    {todos.map((todo) => (
+                        <Todo key={todo.id} title={todo.title} description={todo.description} isDone={todo.isDone} id={todo.id} />
+                    ))}
+                </ul>
+            </div>
+        </>
+
     )
 }

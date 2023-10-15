@@ -2,7 +2,8 @@
 
 import React from "react";
 import { useState } from "react";
-import { storedTodos } from "./TodoList";
+import { TodoProps } from "../types";
+
 
 let createUniqueId = (lastId = 0) => {
     let last = lastId;
@@ -12,27 +13,31 @@ let createUniqueId = (lastId = 0) => {
     }
 }
 
-export function TodoForm({ addTodo, createUniqueId }: { addTodo: Function, createUniqueId: Function }) {
+interface FormElements extends HTMLFormElement {
+    todoTitle: HTMLInputElement
+    description: HTMLInputElement
+}
 
-    const [titleValue, setTitleValue] = useState("");
-    const [descriptionValue, setDescriptionValue] = useState("");
+interface TodoFormProps { addTodo: (newTodo: TodoProps) => void, todoList: TodoProps[] }
 
-    function handleFormSubmit(e: React.ChangeEvent<HTMLFormElement>) {
+export function TodoForm({ addTodo, todoList }: TodoFormProps) {
+
+    function handleFormSubmit(e: React.ChangeEvent<FormElements>) {
         e.preventDefault();
 
-        const uniqueId = createUniqueId(storedTodos[storedTodos.length - 1]?.id);
+        const title = e.target.todoTitle.value;
+        const description = e.target.description.value;
+        
+        const uniqueId = createUniqueId(todoList[todoList.length - 1]?.id);
 
         const newTodo = {
-            title: titleValue,
-            description: descriptionValue,
+            title: title,
+            description: description,
             isDone: false,  
-            id: uniqueId,
+            id: uniqueId(),
         }
 
         addTodo(newTodo);
-        console.log(newTodo)
-        setTitleValue("");
-        setDescriptionValue("");
     }
 
     return (
@@ -40,8 +45,8 @@ export function TodoForm({ addTodo, createUniqueId }: { addTodo: Function, creat
             <div className="form-wrapper">
                 <form className="todo-form" onSubmit={handleFormSubmit}>
                     <h2 className="todo-form__title">ADD TODO</h2>
-                    <input onChange={(e) => setTitleValue(e.target.value)} type="text" name="title" className="todo-form__input-title" id="input-title" placeholder="Title" autoFocus />
-                    <input onChange={(e) => setDescriptionValue(e.target.value)} type="text" name="description" className="todo-form__input-description" id="input-description" placeholder="Description" />
+                    <input type="text" name="todoTitle" className="todo-form__input-title" id="input-title" placeholder="Title" autoFocus />
+                    <input type="text" name="description" className="todo-form__input-description" id="input-description" placeholder="Description" />
                     <button className="todo-form-btn__input-submit button" id="submit-btn" type="submit">ADD</button>
                 </form>
             </div>

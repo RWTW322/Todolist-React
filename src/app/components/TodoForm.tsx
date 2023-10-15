@@ -2,6 +2,7 @@
 
 import React, { useCallback } from "react";
 import { TodoProps } from "../types";
+import { createTodoFn } from "./TodoList";
 
 
 interface FormElements extends HTMLFormElement {
@@ -9,7 +10,7 @@ interface FormElements extends HTMLFormElement {
     description: HTMLInputElement
 }
 
-interface TodoFormProps { addTodo: (newTodo: TodoProps) => void, todoList: TodoProps[] }
+interface TodoFormProps { addTodo: createTodoFn, todoList: TodoProps[] }
 
 export function TodoForm({ addTodo, todoList }: TodoFormProps) {
 

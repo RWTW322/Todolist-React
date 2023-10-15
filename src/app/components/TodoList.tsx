@@ -35,12 +35,14 @@ export const addTodo = (newTodo: TodoProps) => new Promise<TodoProps>((res) => {
 
 export let storedTodos: TodoProps[] = getTodoList();
 
+export type createTodoFn = (newTodo: TodoProps) => void
+
 export function TodoList() {
     const [showModal, setShowModal] = useState(false);
 
     const [todos, setTodos] = useState<TodoProps[]>([]);
 
-    const createTodo = useCallback((newTodo: TodoProps) => {
+    const createTodo: createTodoFn = useCallback((newTodo) => {
         addTodo(newTodo).then(todo=>{
             setTodos(rest=>([...rest, todo]))
             setShowModal(false)

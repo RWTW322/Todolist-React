@@ -1,17 +1,8 @@
 "use client"
 
-import React from "react";
-import { useState } from "react";
+import React, { useCallback } from "react";
 import { TodoProps } from "../types";
 
-
-let createUniqueId = (lastId = 0) => {
-    let last = lastId;
-    return () => {
-        last += 1;
-        return last
-    }
-}
 
 interface FormElements extends HTMLFormElement {
     todoTitle: HTMLInputElement
@@ -22,23 +13,21 @@ interface TodoFormProps { addTodo: (newTodo: TodoProps) => void, todoList: TodoP
 
 export function TodoForm({ addTodo, todoList }: TodoFormProps) {
 
-    function handleFormSubmit(e: React.ChangeEvent<FormElements>) {
+    const handleFormSubmit = useCallback((e: React.ChangeEvent<FormElements>) => {
         e.preventDefault();
 
         const title = e.target.todoTitle.value;
         const description = e.target.description.value;
-        
-        const uniqueId = createUniqueId(todoList[todoList.length - 1]?.id);
 
         const newTodo = {
             title: title,
             description: description,
             isDone: false,  
-            id: uniqueId(),
+            id: todoList[todoList.length - 1]?.id + 1,
         }
 
         addTodo(newTodo);
-    }
+    }, [addTodo, todoList])
 
     return (
         <>

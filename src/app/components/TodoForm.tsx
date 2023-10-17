@@ -3,6 +3,7 @@
 import React, { useCallback } from "react";
 import { TodoProps } from "../types";
 import { createTodoFn } from "./TodoList";
+import { todo } from "node:test";
 
 
 interface FormElements extends HTMLFormElement {
@@ -19,14 +20,20 @@ export function TodoForm({ addTodo, todoList }: TodoFormProps) {
 
         const title = e.target.todoTitle.value;
         const description = e.target.description.value;
+        
+        let newId = 1
+
+        if(todoList.length > 0) {
+            newId = todoList[todoList.length - 1]?.id + 1
+        }
 
         const newTodo = {
             title: title,
             description: description,
             isDone: false,  
-            id: todoList[todoList.length - 1]?.id + 1,
+            id: newId,
         }
-
+        console.log(newTodo.id)
         addTodo(newTodo);
     }, [addTodo, todoList])
 

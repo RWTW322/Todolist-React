@@ -9,7 +9,7 @@ import { TodoProps } from "../types";
 import { getTodoItems, setTodoItem } from "../utils/localStorage";
 
 
-const LS_KEY: string = "TODOLIST";
+export const LS_KEY: string = "TODOLIST";
 
 export const createUniqueId = (lastId = 0) => {
     let last = lastId;

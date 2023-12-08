@@ -49,6 +49,19 @@ export function TodoList() {
         })
     }, [])
 
+    //описать функцию changeTodo - в коллбек передаю нью туду
+
+    const handleChangeTodo = (newTodo: TodoProps) => {
+        const newTodos = todos.map(todo => {
+            if(todo.id === newTodo.id) {
+                return newTodo;
+            }
+            return todo;
+        })
+        setTodos(newTodos);
+        localStorage.setItem(LS_KEY, JSON.stringify(newTodos));
+    }
+
     useEffect(() => {
         const storedData = localStorage.getItem(LS_KEY);
         if (storedData) {
@@ -69,7 +82,7 @@ export function TodoList() {
             <div>
                 <ul className="todo-list">
                     {todos.map((todo) => (
-                        <Todo key={todo.id} title={todo.title} description={todo.description} isDone={todo.isDone} id={todo.id} />
+                        <Todo key={todo.id} title={todo.title} description={todo.description} isDone={todo.isDone} id={todo.id} onChangeTodo={handleChangeTodo}/>
                     ))}
                 </ul>
             </div>

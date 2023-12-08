@@ -3,4 +3,5 @@ export interface TodoProps {
     title: string;
     isDone: boolean;
     id: number;
+    onChangeTodo:(newTodo: TodoProps) => void;
 }
